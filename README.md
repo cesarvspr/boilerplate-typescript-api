@@ -59,8 +59,8 @@ $  npm db:clear
 
 ### API URL 🌐
 
-- [Local](http://localhost:3005)
-- [Production](https://boil-api.herokuapp.com/)
+- Local: [http://localhost:3005](http://localhost:3005)
+- Production: [https://boil-api.herokuapp.com/](https://boil-api.herokuapp.com/)
 
 ### Docs 📝
 

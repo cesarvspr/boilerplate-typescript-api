@@ -44,7 +44,7 @@ export default class User extends BaseModel<IUsersAttributes> {
   isActive: boolean
 
   @BeforeCreate
-  static async handlePassword(user: User): Promise<void> {
+  private static async handlePassword(user: User): Promise<void> {
     // this will be called when an user instance is created or updated
     user.password = await bcrypt.hash(user.password, 10)
   }

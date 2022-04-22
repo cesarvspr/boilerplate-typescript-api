@@ -1,0 +1,28 @@
+{
+  "files.exclude": {
+    "node_modules/":true,
+    "dist/":true,
+    "e2e/":true,
+    "**/*.md": true,
+    ".gitignore": true,
+    "**/.gitkeep":true,
+    ".editorconfig": true,
+    "**/polyfills.ts": true,
+    "**/main.ts": true,
+    "**/tsconfig.app.json": true,
+    "**/tsconfig.spec.json": true,
+    "**/tslint.json": true,
+    "**/karma.conf.js": true,
+    "**/favicon.ico": true,
+    "**/browserslist": true,
+      "**/test.ts": true,
+  },
+  "javascript.validate.enable": true,
+  "javascript.suggestionActions.enabled": true,
+  "mochaExplorer.envPath": ".env.local",
+  "mochaExplorer.require": [
+    "ts-node/register",
+    "tsconfig-paths/register"
+  ],
+  "mochaExplorer.files": "test/**/*.ts",
+}

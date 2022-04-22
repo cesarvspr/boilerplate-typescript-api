@@ -1,0 +1,119 @@
+version: '3.7'
+services:
+  app:
+    image: node:16.4.2-alpine
+    container_name: app
+    working_dir: /usr/src/app
+    env_file:
+      - .env.local
+    depends_on:
+      mysql_databse:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    ports:
+      - '3005:3000'
+      - '9237:9229'
+    volumes:
+      - .:/usr/src/app
+      - ./temp:/usr/src/app/temp
+    links:
+      - 'mysql_databse:mysql_databse'
+      - 'mongodb:mongodb'
+    expose:
+      - '9237'
+    command: npm run start:dev
+  apimock:
+    build:
+      context: .
+      dockerfile: api-mocks/Dockerfile
+    ports:
+      - '3502:3001'
+      - '3503:3002'
+      - '3504:3003'
+      - '3505:3004'
+      - '3508:3007'
+    volumes:
+      - ./api-mocks/api-mock.json:/data:ro
+    command: sh -c "mockoon-cli start -d data --all; sleep infinity"
+  mysql_databse:
+    image: mysql:5.7.33
+    container_name: mysql_databse
+    environment:
+      MYSQL_DATABASE: 'database'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_TCP_PORT: 3306
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-ppassword', '-uuser']
+      interval: 10s
+      timeout: 20s
+      retries: 10
+    command:
+      - mysqld
+      - --default_storage_engine=InnoDB
+  php-mysqladmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: api_pma
+    links:
+      - mysql_databse
+    environment:
+      PMA_HOST: mysql_databse
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: always
+    ports:
+      - 8084:80
+  redis-docker:
+    image: redis:latest
+    command: redis-server --requirepass password
+    ports:
+      - '6379:6379'
+  mongo-web-express:
+    image: mongo-express
+    container_name: mongo-web-express
+    ports:
+      - 8081:8081
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongo:27017/
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+    links:
+      - mongodb
+  mongodb:
+    image: mongo
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    healthcheck:
+      test: echo 'db.runCommand({serverStatus:1}).ok' | mongo admin -u admin -p
+        password --quiet | grep 1
+      interval: 10s
+      timeout: 20s
+      retries: 10
+    ports:
+      - '27017:27017'
+    command: mongod --quiet --logpath /dev/null
+    volumes:
+      - ~/mongo:/data/db
+
+volumes:
+  dbdata: null
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.21.1.0/24
+    name: network

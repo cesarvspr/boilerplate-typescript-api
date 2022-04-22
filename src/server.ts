@@ -43,7 +43,13 @@ async function startServer(): Promise<void> {
   // })
   new DataBase().connect(async (db: Sequelize) => {
     const appInstance = container.resolve<IAppFactory>(App)
-    const port = process.env.APP_PORT ?? '3000'
+    let port
+
+    if (process.env.PORT) {
+      port = process.env.APP_PORT
+    } else {
+      port = process.env.APP_PORT ?? '3000'
+    }
 
     const serverInstance = await appInstance.build()
     await serverInstance.listen(port)

@@ -46,7 +46,7 @@ async function startServer(): Promise<void> {
     let port
 
     if (process.env.PORT) {
-      port = process.env.APP_PORT
+      port = process.env.PORT
     } else {
       port = process.env.APP_PORT ?? '3000'
     }

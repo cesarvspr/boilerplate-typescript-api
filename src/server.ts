@@ -8,7 +8,7 @@ import {Sequelize} from 'sequelize'
 import mongoose from 'mongoose'
 import {LoggerService} from '@lib/logger'
 
-const mongoUri = process.env.MONGO_URI as string
+// const mongoUri = process.env.MONGO_URI as string
 const logger = new LoggerService('db')
 function runMigrations(): Promise<void> {
   return new Promise(resolve => {
@@ -35,12 +35,12 @@ function runSeeds(): Promise<void> {
 async function startServer(): Promise<void> {
   // await runMigrations()
   // await runSeeds()
-
-  mongoose.connect(mongoUri)
-  mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
-  mongoose.connection.once('open', () => {
-    logger.info('MongoDB connected')
-  })
+  logger.info('--------Starting server-------')
+  // mongoose.connect(mongoUri)
+  // mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
+  // mongoose.connection.once('open', () => {
+  //   logger.info('MongoDB connected')
+  // })
   new DataBase().connect(async (db: Sequelize) => {
     const appInstance = container.resolve<IAppFactory>(App)
     const port = process.env.APP_PORT ?? '3000'

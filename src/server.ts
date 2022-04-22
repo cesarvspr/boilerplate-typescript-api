@@ -35,6 +35,9 @@ function runSeeds(): Promise<void> {
 async function startServer(): Promise<void> {
   // await runMigrations()
   // await runSeeds()
+  logger.info('--------Starting migrations-------')
+  await runMigrations()
+  logger.info('-------- migrations done -------')
   logger.info('--------Starting server-------')
   // mongoose.connect(mongoUri)
   // mongoose.connection.on('error', console.error.bind(console, 'connection error:'))
